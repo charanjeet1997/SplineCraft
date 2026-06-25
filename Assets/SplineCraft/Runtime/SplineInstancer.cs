@@ -23,9 +23,8 @@ namespace SplineCraft
         // ── Inspector ────────────────────────────────────────────────────────
 
         [Header("Spline Source")]
-        [Tooltip("SplineContainer to place along. Not owned by this component.")]
+        [Tooltip("SplineContainer to place along. All splines inside will be used.")]
         public SplineContainer splineContainer;
-        public int splineIndex = 0;
 
         [Header("Sub-Range (metres, -1 = full spline)")]
         public float startDistance = -1f;
@@ -88,7 +87,12 @@ namespace SplineCraft
             ClearAll();
             if (!ValidateInputs()) return;
 
-            var spline = splineContainer.Splines[splineIndex];
+            for (int i = 0; i < splineContainer.Splines.Count; i++)
+                RebuildSpline(splineContainer.Splines[i]);
+        }
+
+        void RebuildSpline(ISpline spline)
+        {
             var table  = SplineMathUtils.Build(spline);
             var frames = SplineMathUtils.ComputeRMFFrames(spline, 512);
 
@@ -179,8 +183,6 @@ namespace SplineCraft
                 ? (GameObject)UnityEditor_InstantiatePrefabOrCreate(itemPrefab, transform)
                 : new GameObject($"Item_{index}");
 
-            go.transform.position = transform.TransformPoint(
-                transform.InverseTransformPoint(frame.Position));
             go.transform.position = frame.Position;
             go.transform.rotation = AxisRotation(frame.Tangent, frame.Up, forwardAxis);
             go.transform.SetParent(transform, worldPositionStays: true);
@@ -313,7 +315,7 @@ namespace SplineCraft
         bool ValidateInputs()
         {
             if (splineContainer == null) return false;
-            if (splineIndex < 0 || splineIndex >= splineContainer.Splines.Count) return false;
+            if (splineContainer.Splines.Count == 0) return false;
             if (spacingMultiplier <= 0f) return false;
             return true;
         }

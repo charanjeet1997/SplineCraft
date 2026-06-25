@@ -56,20 +56,22 @@ namespace SplineCraft.Editor
         {
             var instancer = (SplineInstancer)target;
             if (instancer.splineContainer == null) return;
-            if (instancer.splineIndex < 0 || instancer.splineIndex >= instancer.splineContainer.Splines.Count) return;
-
-            var spline = instancer.splineContainer.Splines[instancer.splineIndex];
-            var table  = SplineMathUtils.Build(spline);
-            var frames = SplineMathUtils.ComputeRMFFrames(spline, 256);
-
-            float start = instancer.startDistance < 0f ? 0f :
-                Mathf.Clamp(instancer.startDistance, 0f, table.TotalLength);
-            float end = instancer.endDistance < 0f ? table.TotalLength :
-                Mathf.Clamp(instancer.endDistance, 0f, table.TotalLength);
 
             var containerTransform = instancer.splineContainer.transform;
-            DrawRangeGizmo(spline, table, containerTransform, start, end, instancer.gameObject.name);
-            DrawInstanceGizmos(spline, table, frames, containerTransform, instancer, start, end);
+
+            foreach (var spline in instancer.splineContainer.Splines)
+            {
+                var table  = SplineMathUtils.Build(spline);
+                var frames = SplineMathUtils.ComputeRMFFrames(spline, 256);
+
+                float start = instancer.startDistance < 0f ? 0f :
+                    Mathf.Clamp(instancer.startDistance, 0f, table.TotalLength);
+                float end = instancer.endDistance < 0f ? table.TotalLength :
+                    Mathf.Clamp(instancer.endDistance, 0f, table.TotalLength);
+
+                DrawRangeGizmo(spline, table, containerTransform, start, end, instancer.gameObject.name);
+                DrawInstanceGizmos(spline, table, frames, containerTransform, instancer, start, end);
+            }
         }
 
         static void DrawRangeGizmo(
