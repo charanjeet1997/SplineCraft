@@ -1,0 +1,29 @@
+{
+  "name": "com.splinecraft.core",
+  "version": "1.0.0",
+  "displayName": "SplineCraft",
+  "description": "General-purpose spline-based content placement for Unity. Includes SplineMeshDeformer (continuous mesh bending) and SplineInstancer (repeated prefab placement) with sub-range support, rotation-minimizing frames, and baked mesh output.",
+  "unity": "6000.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://github.com/YOUR_USERNAME/SplineCraft#readme",
+  "changelogUrl": "https://github.com/YOUR_USERNAME/SplineCraft/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/YOUR_USERNAME/SplineCraft/blob/main/LICENSE.md",
+  "dependencies": {
+    "com.unity.splines": "2.8.4"
+  },
+  "keywords": [
+    "spline",
+    "mesh",
+    "placement",
+    "fence",
+    "instancer",
+    "deformer",
+    "hdrp",
+    "urp"
+  ],
+  "author": {
+    "name": "YOUR_NAME",
+    "email": "YOUR_EMAIL",
+    "url": "https://github.com/YOUR_USERNAME"
+  }
+}
