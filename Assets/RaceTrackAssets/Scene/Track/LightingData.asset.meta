@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c1198129b58c16049803fff7cb3db624
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 112000000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 308170
+  packageName: Reckless Race Track Pack 2
+  packageVersion: 1.0
+  assetPath: Assets/RaceTrackAssets/Scene/Track/LightingData.asset
+  uploadId: 728361

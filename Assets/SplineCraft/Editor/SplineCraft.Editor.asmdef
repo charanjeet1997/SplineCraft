@@ -1,0 +1,20 @@
+{
+    "name": "SplineCraft.Editor",
+    "rootNamespace": "SplineCraft.Editor",
+    "references": [
+        "SplineCraft.Runtime",
+        "Unity.Splines",
+        "Unity.Splines.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

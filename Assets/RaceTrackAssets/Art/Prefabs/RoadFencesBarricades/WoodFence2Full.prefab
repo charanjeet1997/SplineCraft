@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5062336616446610342
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1195810333739596142}
+  m_Layer: 0
+  m_Name: WoodFence2Full
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1195810333739596142
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5062336616446610342}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1577020966677563700}
+  - {fileID: 1582096248928636581}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &5046752245141870582
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1195810333739596142}
+    m_Modifications:
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.5999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.563
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.074
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6386331834976732280, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+      propertyPath: m_Name
+      value: WoodFence2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+--- !u!4 &1577020966677563700 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6046960301457202882, guid: 41cb331a6cd6d4e47bdb23c4b4f7f5a3, type: 3}
+  m_PrefabInstance: {fileID: 5046752245141870582}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5819776724365992928
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1195810333739596142}
+    m_Modifications:
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5655233139073955839, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+      propertyPath: m_Name
+      value: WoodFence2Beam
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+--- !u!4 &1582096248928636581 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4985691767647333701, guid: 6c222be921c90a74f900afe196ed4873, type: 3}
+  m_PrefabInstance: {fileID: 5819776724365992928}
+  m_PrefabAsset: {fileID: 0}
