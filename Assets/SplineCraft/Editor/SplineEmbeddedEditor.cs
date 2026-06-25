@@ -6,15 +6,16 @@ using UnityEngine.Splines;
 namespace SplineCraft.Editor
 {
     /// <summary>
-    /// Embedded spline editor — click on scene geometry to extrude knots,
-    /// drag existing knots to move them. Activated via "Edit Spline" toggle.
+    /// Embedded spline editor — knot move handles and bezier tangents always visible.
+    /// Click-on-ground extrusion only active in Edit Spline mode.
     /// </summary>
     public static class SplineEmbeddedEditor
     {
-        static readonly Color SplineColor   = new Color(0.3f, 0.9f, 1f, 1f);
-        static readonly Color KnotColor     = new Color(1f, 0.9f, 0.1f, 1f);
-        static readonly Color SelectedColor = new Color(1f, 0.4f, 0.1f, 1f);
-        static readonly Color PreviewColor  = new Color(0.5f, 1f, 0.5f, 0.8f);
+        static readonly Color SplineColor  = new Color(0.3f, 0.9f, 1f, 1f);
+        static readonly Color KnotColor    = new Color(1f, 0.9f, 0.1f, 1f);
+        static readonly Color SelectedColor= new Color(1f, 0.4f, 0.1f, 1f);
+        static readonly Color TangentColor = new Color(0.8f, 0.8f, 0.8f, 0.9f);
+        static readonly Color PreviewColor = new Color(0.5f, 1f, 0.5f, 0.8f);
 
         public static bool editMode = false;
 
@@ -22,7 +23,6 @@ namespace SplineCraft.Editor
         static int _selectedSpline = -1;
         static Vector3 _previewPos;
         static bool _hasPreview;
-
         static int _controlId;
 
         // ── Inspector toggle ─────────────────────────────────────────────────
@@ -30,7 +30,6 @@ namespace SplineCraft.Editor
         public static void DrawEditToggle(SplineContainer container)
         {
             EditorGUILayout.Space(4);
-
             EditorGUILayout.BeginHorizontal();
 
             Color bg = editMode ? new Color(1f, 0.55f, 0.1f) : new Color(0.3f, 0.7f, 1f);
@@ -51,7 +50,6 @@ namespace SplineCraft.Editor
             GUI.backgroundColor = prev;
             EditorGUILayout.EndHorizontal();
 
-            // Spline selector
             if (container != null && container.Splines.Count > 1)
             {
                 EditorGUILayout.Space(2);
@@ -60,8 +58,7 @@ namespace SplineCraft.Editor
                 for (int i = 0; i < container.Splines.Count; i++)
                 {
                     bool active = _selectedSpline == i;
-                    var btnColor = active ? new Color(1f, 0.8f, 0.2f) : Color.white;
-                    GUI.backgroundColor = btnColor;
+                    GUI.backgroundColor = active ? new Color(1f, 0.8f, 0.2f) : Color.white;
                     if (GUILayout.Button($"Spline {i}", GUILayout.Height(22)))
                     {
                         _selectedSpline = i;
@@ -103,18 +100,18 @@ namespace SplineCraft.Editor
         public static void DrawSplineHandles(SplineContainer container)
         {
             if (container == null) return;
-
             var t = container.transform;
 
             DrawAllSplines(container, t);
+            DrawKnots(container, t);  // always visible — no editMode gate
 
-            if (!editMode) return;
-
-            _controlId = GUIUtility.GetControlID(FocusType.Passive);
-            HandleInput(container, t);
-            DrawKnots(container, t);
-            DrawPreview();
-            DrawHint();
+            if (editMode)
+            {
+                _controlId = GUIUtility.GetControlID(FocusType.Passive);
+                HandleInput(container, t);
+                DrawPreview();
+                DrawHint();
+            }
         }
 
         // ── Spline curve drawing ─────────────────────────────────────────────
@@ -138,13 +135,11 @@ namespace SplineCraft.Editor
             }
         }
 
-        // ── Input handling ───────────────────────────────────────────────────
+        // ── Input handling (editMode only) ───────────────────────────────────
 
         static void HandleInput(SplineContainer container, Transform t)
         {
             var e = Event.current;
-
-            // Raycast mouse onto scene geometry for preview and placement
             _hasPreview = RaycastScene(e.mousePosition, out _previewPos);
 
             switch (e.type)
@@ -160,7 +155,6 @@ namespace SplineCraft.Editor
                             ExtrudeKnot(container, _selectedSpline, _previewPos, t);
                         else
                             AppendKnot(container, _previewPos, t);
-
                         e.Use();
                         GUIUtility.hotControl = _controlId;
                     }
@@ -180,7 +174,7 @@ namespace SplineCraft.Editor
             }
         }
 
-        // ── Knot drawing & selection ─────────────────────────────────────────
+        // ── Knot + bezier handles ────────────────────────────────────────────
 
         static void DrawKnots(SplineContainer container, Transform t)
         {
@@ -197,22 +191,67 @@ namespace SplineCraft.Editor
                     bool isSelected = _selectedKnot == ki && _selectedSpline == si;
                     Handles.color   = isSelected ? SelectedColor : KnotColor;
 
-                    // Click knot to select
                     if (Handles.Button(world, Quaternion.identity, size, size, Handles.SphereHandleCap))
                     {
                         _selectedKnot   = ki;
                         _selectedSpline = si;
                     }
 
-                    // Move selected knot
                     if (isSelected)
                     {
                         EditorGUI.BeginChangeCheck();
                         Vector3 moved = Handles.PositionHandle(world, t.rotation);
                         if (EditorGUI.EndChangeCheck())
                             MoveKnot(container, spline, ki, moved, t);
+
+                        DrawTangentHandles(container, spline, ki, t);
                     }
                 }
+            }
+        }
+
+        static void DrawTangentHandles(SplineContainer container, Spline spline, int ki, Transform t)
+        {
+            var knot = spline[ki];
+            Vector3 knotWorld = t.TransformPoint((Vector3)(float3)knot.Position);
+
+            // Tangents are in knot-local space; apply knot rotation then container transform
+            float3 tanInLocal  = knot.Position + math.mul(knot.Rotation, knot.TangentIn);
+            float3 tanOutLocal = knot.Position + math.mul(knot.Rotation, knot.TangentOut);
+            Vector3 tanInWorld  = t.TransformPoint((Vector3)tanInLocal);
+            Vector3 tanOutWorld = t.TransformPoint((Vector3)tanOutLocal);
+
+            float hSize = HandleUtility.GetHandleSize(knotWorld) * 0.07f;
+            Handles.color = TangentColor;
+            Handles.DrawLine(knotWorld, tanInWorld, 1.5f);
+            Handles.DrawLine(knotWorld, tanOutWorld, 1.5f);
+
+            // TangentIn handle
+            EditorGUI.BeginChangeCheck();
+            Vector3 newIn = Handles.FreeMoveHandle(tanInWorld, hSize, Vector3.zero, Handles.CircleHandleCap);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(container, "Move Tangent In");
+                spline.SetTangentMode(ki, TangentMode.Broken);
+                var k = spline[ki];
+                float3 localOffset = (float3)t.InverseTransformPoint(newIn) - k.Position;
+                k.TangentIn = math.mul(math.inverse(k.Rotation), localOffset);
+                spline.SetKnot(ki, k);
+                EditorUtility.SetDirty(container);
+            }
+
+            // TangentOut handle
+            EditorGUI.BeginChangeCheck();
+            Vector3 newOut = Handles.FreeMoveHandle(tanOutWorld, hSize, Vector3.zero, Handles.CircleHandleCap);
+            if (EditorGUI.EndChangeCheck())
+            {
+                Undo.RecordObject(container, "Move Tangent Out");
+                spline.SetTangentMode(ki, TangentMode.Broken);
+                var k = spline[ki];
+                float3 localOffset = (float3)t.InverseTransformPoint(newOut) - k.Position;
+                k.TangentOut = math.mul(math.inverse(k.Rotation), localOffset);
+                spline.SetKnot(ki, k);
+                EditorUtility.SetDirty(container);
             }
         }
 
@@ -220,17 +259,13 @@ namespace SplineCraft.Editor
 
         static void AppendKnot(SplineContainer container, Vector3 worldPos, Transform t)
         {
-            if (container.Splines.Count == 0)
-                container.AddSpline();
-
+            if (container.Splines.Count == 0) container.AddSpline();
             int si = Mathf.Clamp(_selectedSpline, 0, container.Splines.Count - 1);
             var spline = container.Splines[si] as Spline;
             if (spline == null) return;
 
             Undo.RecordObject(container, "Add Spline Knot");
-            var local = (float3)t.InverseTransformPoint(worldPos);
-            spline.Add(new BezierKnot(local), TangentMode.AutoSmooth);
-
+            spline.Add(new BezierKnot((float3)t.InverseTransformPoint(worldPos)), TangentMode.AutoSmooth);
             _selectedKnot   = spline.Count - 1;
             _selectedSpline = si;
             EditorUtility.SetDirty(container);
@@ -242,9 +277,7 @@ namespace SplineCraft.Editor
             if (spline == null) return;
 
             Undo.RecordObject(container, "Extrude Spline Knot");
-            var local = (float3)t.InverseTransformPoint(worldPos);
-            spline.Add(new BezierKnot(local), TangentMode.AutoSmooth);
-
+            spline.Add(new BezierKnot((float3)t.InverseTransformPoint(worldPos)), TangentMode.AutoSmooth);
             _selectedKnot = spline.Count - 1;
             EditorUtility.SetDirty(container);
         }
@@ -271,8 +304,8 @@ namespace SplineCraft.Editor
         static void DrawHint()
         {
             Handles.BeginGUI();
-            GUI.Label(new Rect(10, Screen.height - 90, 340, 20),
-                "LMB: place/extrude knot   |   Click knot to select & move   |   Esc: exit",
+            GUI.Label(new Rect(10, Screen.height - 90, 380, 20),
+                "LMB: place/extrude knot   |   Click knot to select & move/adjust tangents   |   Esc: exit",
                 EditorStyles.boldLabel);
             Handles.EndGUI();
         }
@@ -282,18 +315,9 @@ namespace SplineCraft.Editor
         static bool RaycastScene(Vector2 mousePos, out Vector3 hitPoint)
         {
             var ray = HandleUtility.GUIPointToWorldRay(mousePos);
-            if (Physics.Raycast(ray, out var hit))
-            {
-                hitPoint = hit.point;
-                return true;
-            }
-            // Fallback: intersect with Y=0 plane
+            if (Physics.Raycast(ray, out var hit)) { hitPoint = hit.point; return true; }
             var plane = new Plane(Vector3.up, Vector3.zero);
-            if (plane.Raycast(ray, out float d))
-            {
-                hitPoint = ray.GetPoint(d);
-                return true;
-            }
+            if (plane.Raycast(ray, out float d)) { hitPoint = ray.GetPoint(d); return true; }
             hitPoint = Vector3.zero;
             return false;
         }

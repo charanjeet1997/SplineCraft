@@ -142,11 +142,16 @@ namespace SplineCraft.Editor
             Handles.color = InstanceColor;
             float rangeLength = end - start;
             var mesh = instancer.itemPrefab.GetComponentInChildren<MeshFilter>()?.sharedMesh;
-            float axisSize = mesh != null ? instancer.forwardAxis switch {
-                InstanceAxis.X or InstanceAxis.NegX => mesh.bounds.size.x,
-                InstanceAxis.Y or InstanceAxis.NegY => mesh.bounds.size.y,
-                _ => mesh.bounds.size.z
-            } : 1f;
+            Vector3 bSize = mesh != null ? mesh.bounds.size : Vector3.one;
+            float axisSize = instancer.forwardAxis switch {
+                InstanceAxis.X    or InstanceAxis.NegX  => bSize.x,
+                InstanceAxis.Y    or InstanceAxis.NegY  => bSize.y,
+                InstanceAxis.Z    or InstanceAxis.NegZ  => bSize.z,
+                InstanceAxis.XY   or InstanceAxis.NegXY => Mathf.Max(bSize.x, bSize.y),
+                InstanceAxis.XZ   or InstanceAxis.NegXZ => Mathf.Max(bSize.x, bSize.z),
+                InstanceAxis.YZ   or InstanceAxis.NegYZ => Mathf.Max(bSize.y, bSize.z),
+                _                                       => bSize.z,
+            };
             float spacing = Mathf.Max(0.01f, axisSize) * instancer.spacingMultiplier;
             int count = Mathf.Max(2, Mathf.RoundToInt(rangeLength / spacing) + 1);
             float step = rangeLength / (count - 1);

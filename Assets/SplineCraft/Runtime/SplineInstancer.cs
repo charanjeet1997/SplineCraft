@@ -9,7 +9,10 @@ namespace SplineCraft
     {
         X, NegX,
         Y, NegY,
-        Z, NegZ
+        Z, NegZ,
+        XY, NegXY,
+        XZ, NegXZ,
+        YZ, NegYZ
     }
 
     /// <summary>
@@ -72,10 +75,18 @@ namespace SplineCraft
             Spline.Changed -= OnSplineChanged;
         }
 
+        bool _rebuildPending;
+
         void OnValidate()
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.delayCall += () => { if (this) Rebuild(); };
+            if (_rebuildPending) return;
+            _rebuildPending = true;
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                _rebuildPending = false;
+                if (this) Rebuild();
+            };
 #endif
         }
 
@@ -290,9 +301,18 @@ namespace SplineCraft
 
         void ClearAll()
         {
-            // Destroy by children — list is unreliable across domain reloads
             for (int i = transform.childCount - 1; i >= 0; i--)
-                DestroyImmediate_Safe(transform.GetChild(i).gameObject);
+            {
+                var child = transform.GetChild(i).gameObject;
+#if UNITY_EDITOR
+                if (!Application.isPlaying)
+                    UnityEditor.EditorApplication.delayCall += () => { if (child) DestroyImmediate(child); };
+                else
+                    Destroy(child);
+#else
+                Destroy(child);
+#endif
+            }
 
             _liveItems.Clear();
             _liveConnectors.Clear();
@@ -308,9 +328,13 @@ namespace SplineCraft
             Vector3 size = mesh.bounds.size;
             float axisSize = forwardAxis switch
             {
-                InstanceAxis.X or InstanceAxis.NegX => size.x,
-                InstanceAxis.Y or InstanceAxis.NegY => size.y,
-                _                                   => size.z,
+                InstanceAxis.X    or InstanceAxis.NegX  => size.x,
+                InstanceAxis.Y    or InstanceAxis.NegY  => size.y,
+                InstanceAxis.Z    or InstanceAxis.NegZ  => size.z,
+                InstanceAxis.XY   or InstanceAxis.NegXY => Mathf.Max(size.x, size.y),
+                InstanceAxis.XZ   or InstanceAxis.NegXZ => Mathf.Max(size.x, size.z),
+                InstanceAxis.YZ   or InstanceAxis.NegYZ => Mathf.Max(size.y, size.z),
+                _                                       => size.z,
             };
             return Mathf.Max(0.01f, axisSize) * Mathf.Max(0.01f, spacingMultiplier);
         }
@@ -373,12 +397,18 @@ namespace SplineCraft
             Vector3 right = Vector3.Cross(tangent, up).normalized;
             return axis switch
             {
-                InstanceAxis.X    => Quaternion.LookRotation(tangent, up) * Quaternion.Euler(0, -90, 0),
-                InstanceAxis.NegX => Quaternion.LookRotation(tangent, up) * Quaternion.Euler(0,  90, 0),
-                InstanceAxis.Y    => Quaternion.LookRotation(tangent, up) * Quaternion.Euler( 90, 0, 0),
-                InstanceAxis.NegY => Quaternion.LookRotation(tangent, up) * Quaternion.Euler(-90, 0, 0),
-                InstanceAxis.NegZ => Quaternion.LookRotation(-tangent, up),
-                _                 => Quaternion.LookRotation(tangent, up),  // Z
+                InstanceAxis.X     => Quaternion.LookRotation(tangent, up)  * Quaternion.Euler(0, -90, 0),
+                InstanceAxis.NegX  => Quaternion.LookRotation(tangent, up)  * Quaternion.Euler(0,  90, 0),
+                InstanceAxis.Y     => Quaternion.LookRotation(tangent, up)  * Quaternion.Euler( 90, 0, 0),
+                InstanceAxis.NegY  => Quaternion.LookRotation(tangent, up)  * Quaternion.Euler(-90, 0, 0),
+                InstanceAxis.NegZ  => Quaternion.LookRotation(-tangent, up),
+                InstanceAxis.XY    => Quaternion.LookRotation(up, -tangent),
+                InstanceAxis.NegXY => Quaternion.LookRotation(-up, tangent),
+                InstanceAxis.XZ    => Quaternion.LookRotation(tangent, up)  * Quaternion.Euler(0, -90, 90),
+                InstanceAxis.NegXZ => Quaternion.LookRotation(-tangent, up) * Quaternion.Euler(0,  90, 90),
+                InstanceAxis.YZ    => Quaternion.LookRotation(tangent, up)  * Quaternion.Euler(90, 0, 90),
+                InstanceAxis.NegYZ => Quaternion.LookRotation(tangent, up)  * Quaternion.Euler(-90, 0, -90),
+                _                  => Quaternion.LookRotation(tangent, up),  // Z
             };
         }
 

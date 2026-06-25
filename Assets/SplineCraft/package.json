@@ -1,6 +1,6 @@
 {
   "name": "com.splinecraft.core",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "displayName": "SplineCraft",
   "description": "General-purpose spline-based content placement for Unity. Includes SplineMeshDeformer (continuous mesh bending) and SplineInstancer (repeated prefab placement) with sub-range support, rotation-minimizing frames, and baked mesh output.",
   "unity": "6000.3",
