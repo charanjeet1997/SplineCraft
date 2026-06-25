@@ -2,7 +2,8 @@
     "name": "SplineCraft.Runtime",
     "rootNamespace": "SplineCraft",
     "references": [
-        "Unity.Splines"
+        "Unity.Splines",
+        "Unity.Mathematics"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
