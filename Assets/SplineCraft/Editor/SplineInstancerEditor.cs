@@ -15,6 +15,10 @@ namespace SplineCraft.Editor
         {
             var instancer = (SplineInstancer)target;
 
+            SplineEmbeddedEditor.DrawEditToggle(instancer.splineContainer);
+            SplineEmbeddedEditor.HandlePendingActions(instancer.splineContainer);
+            EditorGUILayout.Space();
+
             EditorGUILayout.HelpBox(
                 "Places repeated prefab instances at arc-length-even intervals along a spline sub-range.\n" +
                 "Use case examples: fence posts + rail connectors, bollards, light poles, mooring points.\n" +
@@ -30,6 +34,31 @@ namespace SplineCraft.Editor
             {
                 if (GUILayout.Button("Rebuild"))
                     instancer.Rebuild();
+
+                EditorGUILayout.Space();
+
+                var prevColor = GUI.backgroundColor;
+                GUI.backgroundColor = new Color(1f, 0.3f, 0.3f);
+                if (GUILayout.Button("Clear Instances", GUILayout.Height(24)))
+                {
+                    Undo.RecordObject(instancer.gameObject, "Clear Instances");
+                    instancer.ClearInstances();
+                }
+                if (GUILayout.Button("Clear All Splines", GUILayout.Height(24)))
+                {
+                    if (EditorUtility.DisplayDialog("Clear All Splines",
+                        "This will remove all splines from the SplineContainer. Undo to recover.",
+                        "Clear", "Cancel"))
+                    {
+                        Undo.RecordObject(instancer.splineContainer, "Clear All Splines");
+                        for (int i = instancer.splineContainer.Splines.Count - 1; i >= 0; i--)
+                            instancer.splineContainer.RemoveSplineAt(i);
+                        instancer.splineContainer.AddSpline();
+                        instancer.ClearInstances();
+                        EditorUtility.SetDirty(instancer.splineContainer);
+                    }
+                }
+                GUI.backgroundColor = prevColor;
 
                 EditorGUILayout.Space();
 
@@ -57,10 +86,13 @@ namespace SplineCraft.Editor
             var instancer = (SplineInstancer)target;
             if (instancer.splineContainer == null) return;
 
+            SplineEmbeddedEditor.DrawSplineHandles(instancer.splineContainer);
+
             var containerTransform = instancer.splineContainer.transform;
 
             foreach (var spline in instancer.splineContainer.Splines)
             {
+                if (spline.Count < 2) continue;
                 var table  = SplineMathUtils.Build(spline);
                 var frames = SplineMathUtils.ComputeRMFFrames(spline, 256);
 

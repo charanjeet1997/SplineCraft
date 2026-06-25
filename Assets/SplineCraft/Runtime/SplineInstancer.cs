@@ -93,6 +93,7 @@ namespace SplineCraft
 
         void RebuildSpline(ISpline spline)
         {
+            if (spline.Count < 2) return;
             var table  = SplineMathUtils.Build(spline);
             var frames = SplineMathUtils.ComputeRMFFrames(spline, 512);
 
@@ -284,6 +285,8 @@ namespace SplineCraft
         }
 
         // ── Cleanup ───────────────────────────────────────────────────────────
+
+        public void ClearInstances() => ClearAll();
 
         void ClearAll()
         {

@@ -13,6 +13,10 @@ namespace SplineCraft.Editor
         {
             var deformer = (SplineMeshDeformer)target;
 
+            SplineEmbeddedEditor.DrawEditToggle(deformer.splineContainer);
+            SplineEmbeddedEditor.HandlePendingActions(deformer.splineContainer);
+            EditorGUILayout.Space();
+
             EditorGUILayout.HelpBox(
                 "Deforms a mesh continuously along a spline sub-range.\n" +
                 "Use case examples: walls, pipes, cables, curved road shoulders.\n" +
@@ -36,6 +40,7 @@ namespace SplineCraft.Editor
             if (deformer.splineIndex < 0 || deformer.splineIndex >= deformer.splineContainer.Splines.Count) return;
 
             var spline = deformer.splineContainer.Splines[deformer.splineIndex];
+            if (spline.Count < 2) return;
             var table  = SplineMathUtils.Build(spline);
 
             float start = deformer.startDistance < 0f ? 0f :
@@ -43,6 +48,7 @@ namespace SplineCraft.Editor
             float end = deformer.endDistance < 0f ? table.TotalLength :
                 Mathf.Clamp(deformer.endDistance, 0f, table.TotalLength);
 
+            SplineEmbeddedEditor.DrawSplineHandles(deformer.splineContainer);
             DrawRangeGizmo(spline, table, deformer.splineContainer.transform, start, end, deformer.gameObject.name);
         }
 
